@@ -2070,16 +2070,6 @@ if ("development" !== 'production' && typeof isCrushed.name === 'string' && isCr
   warning('You are currently using minified code outside of NODE_ENV === \'production\'. ' + 'This means that you are running a slower development build of Redux. ' + 'You can use loose-envify (https://github.com/zertosh/loose-envify) for browserify ' + 'or DefinePlugin for webpack (http://stackoverflow.com/questions/30030031) ' + 'to ensure you have the correct code for your production build.');
 }
 
-
-
-var index$4 = Object.freeze({
-	createStore: createStore,
-	combineReducers: combineReducers,
-	bindActionCreators: bindActionCreators,
-	applyMiddleware: applyMiddleware,
-	compose: compose
-});
-
 function wrapActionCreators(actionCreators) {
   return function (dispatch) {
     return bindActionCreators(actionCreators, dispatch);
@@ -2276,7 +2266,7 @@ function isPlainObject$2(value) {
     Ctor instanceof Ctor && funcToString$1.call(Ctor) == objectCtorString$1);
 }
 
-var index$5 = isPlainObject$2;
+var index$4 = isPlainObject$2;
 
 /**
  * lodash 3.0.8 (Custom Build) <https://lodash.com/>
@@ -2352,7 +2342,7 @@ function isObject$2(value) {
   return !!value && (type == 'object' || type == 'function');
 }
 
-var index$6 = isFunction;
+var index$5 = isFunction;
 
 /**
  * lodash 3.0.2 (Custom Build) <https://lodash.com/>
@@ -2390,7 +2380,7 @@ function isObject$3(value) {
   return !!value && (type == 'object' || type == 'function');
 }
 
-var index$7 = isObject$3;
+var index$6 = isObject$3;
 
 var assign$4 = _Object$assign;
 var defaultMapStateToTarget = function defaultMapStateToTarget() {
@@ -2405,14 +2395,14 @@ function Connector(store) {
 
     var finalMapStateToTarget = mapStateToTarget || defaultMapStateToTarget;
 
-    var finalMapDispatchToTarget = index$5(mapDispatchToTarget) ? wrapActionCreators(mapDispatchToTarget) : mapDispatchToTarget || defaultMapDispatchToTarget;
+    var finalMapDispatchToTarget = index$4(mapDispatchToTarget) ? wrapActionCreators(mapDispatchToTarget) : mapDispatchToTarget || defaultMapDispatchToTarget;
 
-    invariant_1(index$6(finalMapStateToTarget), 'mapStateToTarget must be a Function. Instead received %s.', finalMapStateToTarget);
+    invariant_1(index$5(finalMapStateToTarget), 'mapStateToTarget must be a Function. Instead received %s.', finalMapStateToTarget);
 
-    invariant_1(index$5(finalMapDispatchToTarget) || index$6(finalMapDispatchToTarget), 'mapDispatchToTarget must be a plain Object or a Function. Instead received %s.', finalMapDispatchToTarget);
+    invariant_1(index$4(finalMapDispatchToTarget) || index$5(finalMapDispatchToTarget), 'mapDispatchToTarget must be a plain Object or a Function. Instead received %s.', finalMapDispatchToTarget);
 
     var slice = getStateSlice(store.getState(), finalMapStateToTarget, false);
-    var isFactory = index$6(slice);
+    var isFactory = index$5(slice);
 
     if (isFactory) {
       finalMapStateToTarget = slice;
@@ -2423,7 +2413,7 @@ function Connector(store) {
 
     return function (target) {
 
-      invariant_1(index$6(target) || index$7(target), 'The target parameter passed to connect must be a Function or a object.');
+      invariant_1(index$5(target) || index$6(target), 'The target parameter passed to connect must be a Function or a object.');
 
       //Initial update
       updateTarget(target, slice, boundActionCreators);
@@ -2441,7 +2431,7 @@ function Connector(store) {
 }
 
 function updateTarget(target, StateSlice, dispatch) {
-  if (index$6(target)) {
+  if (index$5(target)) {
     target(StateSlice, dispatch);
   } else {
     assign$4(target, StateSlice, dispatch);
@@ -2454,73 +2444,13 @@ function getStateSlice(state, mapStateToScope) {
   var slice = mapStateToScope(state);
 
   if (shouldReturnObject) {
-    invariant_1(index$5(slice), '`mapStateToScope` must return an object. Instead received %s.', slice);
+    invariant_1(index$4(slice), '`mapStateToScope` must return an object. Instead received %s.', slice);
   } else {
-    invariant_1(index$5(slice) || index$6(slice), '`mapStateToScope` must return an object or a function. Instead received %s.', slice);
+    invariant_1(index$4(slice) || index$5(slice), '`mapStateToScope` must return an object or a function. Instead received %s.', slice);
   }
 
   return slice;
 }
-
-var _redux = ( index$4 && undefined ) || index$4;
-
-var index$8 = createCommonjsModule(function (module, exports) {
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.resetMiddlewares = exports.removeMiddleware = exports.addMiddleware = undefined;
-
-
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-var dynamic = [];
-
-var dynamicMiddlewares = function dynamicMiddlewares(store) {
-  return function (next) {
-    return function (action) {
-      var middlewareAPI = {
-        getState: store.getState,
-        dispatch: function dispatch(act) {
-          return store.dispatch(act);
-        }
-      };
-      var chain = dynamic.map(function (middleware) {
-        return middleware(middlewareAPI);
-      });
-      return _redux.compose.apply(undefined, _toConsumableArray(chain))(next)(action);
-    };
-  };
-};
-
-var addMiddleware = function addMiddleware() {
-  var _dynamic;
-
-  dynamic = (_dynamic = dynamic).concat.apply(_dynamic, arguments);
-};
-
-var removeMiddleware = function removeMiddleware(middleware) {
-  var index = dynamic.findIndex(function (d) {
-    return d === middleware;
-  });
-  if (index === -1) return;
-
-  dynamic = [].concat(_toConsumableArray(dynamic.slice(0, index)), _toConsumableArray(dynamic.slice(index + 1)));
-};
-
-var resetMiddlewares = function resetMiddlewares() {
-  dynamic = [];
-};
-
-exports.default = dynamicMiddlewares;
-exports.addMiddleware = addMiddleware;
-exports.removeMiddleware = removeMiddleware;
-exports.resetMiddlewares = resetMiddlewares;
-});
-
-var index_3 = index$8.addMiddleware;
 
 function digestMiddleware($rootScope) {
     return function (store) {
@@ -3762,9 +3692,9 @@ function identity(value) {
 // Assign default placeholders.
 curry.placeholder = {};
 
-var index$10 = curry;
+var index$7 = curry;
 
-var index$11 = createCommonjsModule(function (module, exports) {
+var index$8 = createCommonjsModule(function (module, exports) {
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -6135,7 +6065,7 @@ module.exports = map;
 
 var isArray = Array.isArray;
 
-var typeIs = index$10(function (type, val) {
+var typeIs = index$7(function (type, val) {
   return (typeof val === 'undefined' ? 'undefined' : _typeof(val)) === type;
 });
 var isObject = typeIs('object');
@@ -6145,46 +6075,34 @@ var assign = _Object$assign;
 function ngReduxProvider() {
   var _reducer = undefined;
   var _middlewares = undefined;
-  var _storeEnhancers = [];
+  var _storeEnhancers = undefined;
   var _initialState = undefined;
   var _reducerIsObject = undefined;
-  var _store = undefined;
 
   this.createStoreWith = function (reducer, middlewares, storeEnhancers, initialState) {
-    invariant_1(index$6(reducer) || isObject(reducer), 'The reducer parameter passed to createStoreWith must be a Function or an Object. Instead received %s.', typeof reducer === 'undefined' ? 'undefined' : _typeof(reducer));
+    invariant_1(index$5(reducer) || isObject(reducer), 'The reducer parameter passed to createStoreWith must be a Function or an Object. Instead received %s.', typeof reducer === 'undefined' ? 'undefined' : _typeof(reducer));
 
     invariant_1(!storeEnhancers || isArray(storeEnhancers), 'The storeEnhancers parameter passed to createStoreWith must be an Array. Instead received %s.', typeof storeEnhancers === 'undefined' ? 'undefined' : _typeof(storeEnhancers));
 
     _reducer = reducer;
     _reducerIsObject = isObject(reducer);
-    _storeEnhancers = storeEnhancers || [];
+    _storeEnhancers = storeEnhancers;
     _middlewares = middlewares || [];
-    _initialState = initialState || {};
-  };
-
-  this.connectToStore = function (store, middlewares) {
-    invariant_1(isArray(storeEnhancers), 'The store parameter passed to connectToStore must be an Object. Instead received %s.', typeof store === 'undefined' ? 'undefined' : _typeof(store));
-
-    invariant_1(!middlewares || isArray(storeEnhancers), 'The middlewares parameter passed to connectToStore must be an Array. Instead received %s.', typeof middlewares === 'undefined' ? 'undefined' : _typeof(middlewares));
-
-    _store = store;
-    _middlewares = middlewares || [];
+    _initialState = initialState;
   };
 
   this.$get = function ($injector) {
-    var store = {};
-
     var resolveMiddleware = function resolveMiddleware(middleware) {
       return isString(middleware) ? $injector.get(middleware) : middleware;
     };
 
-    var resolvedMiddleware = index$11(_middlewares, resolveMiddleware);
+    var resolvedMiddleware = index$8(_middlewares, resolveMiddleware);
 
     var resolveStoreEnhancer = function resolveStoreEnhancer(storeEnhancer) {
       return isString(storeEnhancer) ? $injector.get(storeEnhancer) : storeEnhancer;
     };
 
-    var resolvedStoreEnhancer = index$11(_storeEnhancers, resolveStoreEnhancer);
+    var resolvedStoreEnhancer = index$8(_storeEnhancers, resolveStoreEnhancer);
 
     if (_reducerIsObject) {
       var getReducerKey = function getReducerKey(key) {
@@ -6200,19 +6118,12 @@ function ngReduxProvider() {
       _reducer = combineReducers(reducersObj);
     }
 
-    // digestMiddleware needs to be the last one.
+    var finalCreateStore = resolvedStoreEnhancer ? compose.apply(undefined, _toConsumableArray(resolvedStoreEnhancer))(createStore) : createStore;
+
+    //digestMiddleware needs to be the last one.
     resolvedMiddleware.push(digestMiddleware($injector.get('$rootScope')));
 
-    if (_store) {
-      store = _store;
-      index_3(resolvedMiddleware);
-    } else {
-      // combine middleware into a store enhancer.
-      var middlewares = applyMiddleware.apply(undefined, _toConsumableArray(resolvedMiddleware));
-
-      // compose enhancers with middleware and create store.
-      store = createStore(_reducer, _initialState, compose.apply(undefined, _toConsumableArray(resolvedStoreEnhancer).concat([middlewares])));
-    }
+    var store = _initialState ? applyMiddleware.apply(undefined, _toConsumableArray(resolvedMiddleware))(finalCreateStore)(_reducer, _initialState) : applyMiddleware.apply(undefined, _toConsumableArray(resolvedMiddleware))(finalCreateStore)(_reducer);
 
     return assign({}, store, { connect: Connector(store) });
   };
