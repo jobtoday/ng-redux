@@ -6163,9 +6163,9 @@ function ngReduxProvider() {
   };
 
   this.connectToStore = function (store, middlewares) {
-    invariant_1(isArray(storeEnhancers), 'The store parameter passed to connectToStore must be an Object. Instead received %s.', typeof store === 'undefined' ? 'undefined' : _typeof(store));
+    invariant_1(isArray(store), 'The store parameter passed to connectToStore must be an Object. Instead received %s.', typeof store === 'undefined' ? 'undefined' : _typeof(store));
 
-    invariant_1(!middlewares || isArray(storeEnhancers), 'The middlewares parameter passed to connectToStore must be an Array. Instead received %s.', typeof middlewares === 'undefined' ? 'undefined' : _typeof(middlewares));
+    invariant_1(!middlewares || isArray(middlewares), 'The middlewares parameter passed to connectToStore must be an Array. Instead received %s.', typeof middlewares === 'undefined' ? 'undefined' : _typeof(middlewares));
 
     _store = store;
     _middlewares = middlewares || [];
