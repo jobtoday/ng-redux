@@ -1,6 +1,7 @@
 import Connector from './connector';
 import invariant from 'invariant';
 import {createStore, applyMiddleware, compose, combineReducers} from 'redux';
+import { addMiddleware } from 'redux-dynamic-middlewares';
 import digestMiddleware from './digestMiddleware';
 
 import curry from 'lodash.curry';
@@ -17,9 +18,10 @@ const assign  = Object.assign;
 export default function ngReduxProvider() {
   let _reducer = undefined;
   let _middlewares = undefined;
-  let _storeEnhancers = undefined;
+  let _storeEnhancers = [];
   let _initialState = undefined;
   let _reducerIsObject = undefined;
+  let _store = undefined;
 
   this.createStoreWith = (reducer, middlewares, storeEnhancers, initialState) => {
     invariant(
@@ -41,7 +43,26 @@ export default function ngReduxProvider() {
     _initialState = initialState || {};
   };
 
+  this.connectToStore = (store, middlewares) => {
+    invariant(
+      isArray(storeEnhancers),
+      'The store parameter passed to connectToStore must be an Object. Instead received %s.',
+      typeof store
+    );
+
+    invariant(
+      !middlewares || isArray(storeEnhancers),
+      'The middlewares parameter passed to connectToStore must be an Array. Instead received %s.',
+      typeof middlewares
+    );
+
+    _store = store;
+    _middlewares = middlewares || [];
+  };
+
   this.$get = ($injector) => {
+    let store = {};
+
     const resolveMiddleware = middleware => isString(middleware)
       ? $injector.get(middleware)
       : middleware;
@@ -73,11 +94,16 @@ export default function ngReduxProvider() {
     // digestMiddleware needs to be the last one.
     resolvedMiddleware.push(digestMiddleware($injector.get('$rootScope')));
 
-    // combine middleware into a store enhancer.
-    const middlewares = applyMiddleware(...resolvedMiddleware);
+    if (_store) {
+      store = _store;
+      addMiddleware(resolvedMiddleware);
+    } else {
+      // combine middleware into a store enhancer.
+      const middlewares = applyMiddleware(...resolvedMiddleware);
 
-    // compose enhancers with middleware and create store.
-    const store = createStore(_reducer, _initialState, compose(...resolvedStoreEnhancer, middlewares));
+      // compose enhancers with middleware and create store.
+      store = createStore(_reducer, _initialState, compose(...resolvedStoreEnhancer, middlewares));
+    }
 
     return assign({}, store, { connect: Connector(store) });
   };
