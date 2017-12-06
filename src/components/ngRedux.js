@@ -45,13 +45,13 @@ export default function ngReduxProvider() {
 
   this.connectToStore = (store, middlewares) => {
     invariant(
-      isArray(storeEnhancers),
+      isArray(store),
       'The store parameter passed to connectToStore must be an Object. Instead received %s.',
       typeof store
     );
 
     invariant(
-      !middlewares || isArray(storeEnhancers),
+      !middlewares || isArray(middlewares),
       'The middlewares parameter passed to connectToStore must be an Array. Instead received %s.',
       typeof middlewares
     );
