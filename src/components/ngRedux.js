@@ -94,12 +94,6 @@ export default function ngReduxProvider() {
     // digestMiddleware needs to be the last one.
     resolvedMiddleware.push(digestMiddleware($injector.get('$rootScope')));
 
-    // combine middleware into a store enhancer.
-    const middlewares = applyMiddleware(...resolvedMiddleware);
-
-    // compose enhancers with middleware and create store.
-    const store = createStore(_reducer, _initialState, compose(...resolvedStoreEnhancer, middlewares));
-
     if (_store) {
       store = _store;
       addMiddleware(resolvedMiddleware);
