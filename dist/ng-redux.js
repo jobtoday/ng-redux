@@ -6086,9 +6086,9 @@ function ngReduxProvider() {
 
     _reducer = reducer;
     _reducerIsObject = isObject(reducer);
-    _storeEnhancers = storeEnhancers;
+    _storeEnhancers = storeEnhancers || [];
     _middlewares = middlewares || [];
-    _initialState = initialState;
+    _initialState = initialState || {};
   };
 
   this.$get = function ($injector) {
@@ -6118,12 +6118,14 @@ function ngReduxProvider() {
       _reducer = combineReducers(reducersObj);
     }
 
-    var finalCreateStore = resolvedStoreEnhancer ? compose.apply(undefined, _toConsumableArray(resolvedStoreEnhancer))(createStore) : createStore;
-
-    //digestMiddleware needs to be the last one.
+    // digestMiddleware needs to be the last one.
     resolvedMiddleware.push(digestMiddleware($injector.get('$rootScope')));
 
-    var store = _initialState ? applyMiddleware.apply(undefined, _toConsumableArray(resolvedMiddleware))(finalCreateStore)(_reducer, _initialState) : applyMiddleware.apply(undefined, _toConsumableArray(resolvedMiddleware))(finalCreateStore)(_reducer);
+    // combine middleware into a store enhancer.
+    var middlewares = applyMiddleware.apply(undefined, _toConsumableArray(resolvedMiddleware));
+
+    // compose enhancers with middleware and create store.
+    var store = createStore(_reducer, _initialState, compose.apply(undefined, _toConsumableArray(resolvedStoreEnhancer).concat([middlewares])));
 
     return assign({}, store, { connect: Connector(store) });
   };
