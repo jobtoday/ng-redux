@@ -45,7 +45,7 @@ export default function ngReduxProvider() {
 
   this.connectToStore = (store, middlewares) => {
     invariant(
-      isArray(store),
+      isObject(store),
       'The store parameter passed to connectToStore must be an Object. Instead received %s.',
       typeof store
     );
