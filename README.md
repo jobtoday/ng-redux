@@ -1,3 +1,43 @@
+# Fork changes
+## Using exist store
+
+### 1. Install dependecies
+```
+yarn add redux-dynamic-middlewares
+```
+
+### 2. Add dynamic middleware to root store
+```js
+import { createStore } from 'redux';
+import dynamicMiddlewares from 'redux-dynamic-middlewares';
+import rootReducer from 'path/to/root/reducer/';
+
+const store = createStore(
+  rootReducer,
+  applyMiddleware(
+    // ... other static middlewares
+    dynamicMiddlewares
+  ),
+);
+
+export default store;
+```
+
+### 3. Connect $ngRedux to store
+
+### `connectToStore(store, [middlewares])`
+
+Add 'ngUiRouterMiddleware' for example. middlewares param is optional;
+```js
+imort store from 'path/to/store';
+
+app.config(function($ngReduxProvider) => {
+  'ngInject';
+  $ngReduxProvider.connectToStore(store, ['ngUiRouterMiddleware']);
+})
+```
+
+
 # ng-redux
 ###### Angular bindings for [Redux](https://github.com/gaearon/redux).
 
